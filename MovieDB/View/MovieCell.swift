@@ -10,9 +10,18 @@ import UIKit
 
 class MovieCell: UICollectionViewCell {
 
+    @IBOutlet weak var movieTitle: UILabel!
+    @IBOutlet weak var movieImageView: UIImageView!
+    @IBOutlet weak var releaseDate: UILabel!
+    @IBOutlet weak var rating: UILabel!
+    
+    @IBOutlet weak var containerView: UIView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        rating.layer.cornerRadius = 2
+        rating.clipsToBounds = true
     }
 
 }

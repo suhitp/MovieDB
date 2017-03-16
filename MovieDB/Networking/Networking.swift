@@ -65,7 +65,7 @@ extension MovieDB: TargetType {
         switch self {
         case .popular, .top:
             return ["api_key":apiKey,
-                    "primary_release_date.gte" : "2015-01-01",
+                    "primary_release_date.gte" : "2017-01-01",
                     "primary_release_date.lte" : "2017-12-31"]
         }
     }

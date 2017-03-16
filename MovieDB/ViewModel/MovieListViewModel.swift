@@ -19,7 +19,6 @@ final class MovieListViewModel {
     
     init(provider: MoyaProvider<MovieDB>) {
         self.provider = provider
-        getMovies(of: .popular)
     }
     
     func getMovies(of type: MovieDB) {
@@ -27,11 +26,14 @@ final class MovieListViewModel {
             do {
                 let response = try result.dematerialize()
                 let value = try response.mapJSON() as! [String: Any]
-                let movieArray = Mapper<Movie>().mapArray(JSONArray: value["results"] as! [[String: Any]])
+                print(value)
+                if let movies = Mapper<Movie>().mapArray(JSONArray: (value["results"] as! [[String: Any]])) {
+                    self.delegate?.didReceiveDataWith(movies)
+                }
             } catch {
                 let printableError = error as? CustomStringConvertible
                 let errorMessage = printableError?.description ?? "Unable to fetch from GitHub"
-                print(errorMessage)
+                self.delegate?.didReceiveDataWith(error)
             }
         }
     }

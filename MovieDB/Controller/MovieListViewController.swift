@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 private let reuseIdentifier = "MovieCell"
 
@@ -14,6 +15,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     var movieListViewModel: MovieListViewModel! = nil
     var movies = [Movie]()
+    let baseImageUrl = "https://image.tmdb.org/t/p/w500"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,23 +24,31 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         configureCollectionView()
         
         movieListViewModel = MovieListViewModel(provider: MovieDBProvider)
+        movieListViewModel.delegate = self
     }
     
     private func configureCollectionView() {
+        let layout = collectionView?.collectionViewLayout as! UICollectionViewFlowLayout
+        layout.minimumLineSpacing = 1
+        layout.minimumInteritemSpacing = 1
+        layout.itemSize = CGSize(width: view.frame.size.width / 2 - 0.5, height: 134)
+        
         let nib = UINib(nibName: "MovieCell", bundle: nil)
         self.collectionView!.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
     }
     
-    
+    private func loadMovieData() {
+        self.movieListViewModel.getMovies(of: .popular)
+    }
     //mark: MovieDataProtocol
     
-    func didReceiveDataWith(movies: [Movie]) {
+    func didReceiveDataWith(_ movies: [Movie]) {
         self.movies += movies
         collectionView?.reloadData()
     }
     
     
-    func didReceiveDataWith(error: NSError) {
+    func didReceiveDataWith(_ error: NSError) {
         print(error.localizedDescription)
     }
     
@@ -57,9 +67,14 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MovieCell
+        let movie = movies[indexPath.row]
+        cell.movieTitle.text = movie.title
+        cell.releaseDate.text = movie.release_date
+        cell.rating.text = movie.vote_average
+        let imageUrl = baseImageUrl.appending(movie.backdrop_path)
+        cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: nil, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
         return cell
     }
-    
     
      // MARK: - Navigation
      

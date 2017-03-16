@@ -10,6 +10,6 @@ import UIKit
 
 protocol MovieDataProtocol: class {
     
-    func didReceiveDataWith(movies: [Movie])
-    func didReceiveDataWith(error: NSError)
+    func didReceiveDataWith(_ movies: [Movie])
+    func didReceiveDataWith(_ error: Error)
 }
