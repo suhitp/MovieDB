@@ -194,8 +194,8 @@
                                         <connections>
                                             <outlet property="backgroundImageView" destination="TG1-vd-4uw" id="isM-vY-lAb"/>
                                             <outlet property="detailBackgroundView" destination="Cxb-HO-ErN" id="vnw-3M-OPM"/>
-                                            <outlet property="genresLabel" destination="JRc-v1-zg5" id="OEC-IT-e8q"/>
                                             <outlet property="overviewTextView" destination="UJc-q0-oRg" id="aOc-j0-rEo"/>
+                                            <outlet property="popularityLabel" destination="JRc-v1-zg5" id="k1J-Ks-ckb"/>
                                             <outlet property="posterImageView" destination="e7H-c1-6Bu" id="i8l-qC-RtE"/>
                                             <outlet property="rateLabel" destination="YCv-KK-j1f" id="xLp-bO-Qrr"/>
                                             <outlet property="releaseDate" destination="fh0-y4-stU" id="CID-u9-Rna"/>

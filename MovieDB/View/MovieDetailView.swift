@@ -19,7 +19,7 @@ class MovieDetailView: UIView {
     @IBOutlet weak var rateLabel: UILabel!
     @IBOutlet weak var detailBackgroundView: UIView!
     @IBOutlet weak var voteCountLabel: UILabel!
-    @IBOutlet weak var genresLabel: UILabel!
+    @IBOutlet weak var popularityLabel: UILabel!
     @IBOutlet weak var overviewTextView: UITextView!
     
     func renderDetails(for movie: Movie) {
@@ -37,7 +37,9 @@ class MovieDetailView: UIView {
             voteCountLabel.text = "Vote Count: ".appending(String(count))
         }
         
-        //genresLabel.text = movie.genre_ids.map({"\($0)"}).joined(separator: ",")
+        if let popularity = movie.popularity {
+            popularityLabel.text = "Popularity: ".appending(String(popularity))
+        }
         
         overviewTextView.text = movie.overview
         

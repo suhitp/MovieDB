@@ -18,7 +18,7 @@ struct Movie: Mappable {
     var original_language: String!
     var original_title: String!
     var overview: String!
-    var popularity: Double!
+    var popularity: Double?
     var poster_path: String!
     var release_date: Date!
     var title: String!
@@ -44,19 +44,7 @@ struct Movie: Mappable {
         release_date <- (map["release_date"], CustomDateFormatTransform(formatString: "yyyy-MM-dd"))
         title <- map["title"]
         video <- map["video"]
-        
-        let transform = TransformOf<Double, String>(fromJSON: { (value: String?) -> Double? in
-            if value != nil {
-                return Double(value!)
-            }
-            return 0
-        }) { (value) -> String? in
-            if value != nil {
-                return String(value!)
-            }
-            return nil
-        }
-        popularity <- (map["popularity"], transform)
+        popularity <- map["popularity"]
         vote_average <- map["vote_average"]
         vote_count <- map["vote_count"]
     }
