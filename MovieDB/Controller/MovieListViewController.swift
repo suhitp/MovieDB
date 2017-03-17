@@ -9,7 +9,7 @@
 import UIKit
 import Kingfisher
 
-private let reuseIdentifier = "MovieCell"
+
 
 class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
@@ -44,8 +44,8 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         layout.minimumInteritemSpacing = 1
         layout.itemSize = CGSize(width: view.frame.size.width / 2 - 0.5, height: 134)
         
-        let nib = UINib(nibName: "MovieCell", bundle: nil)
-        self.collectionView!.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
+        let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
+        self.collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
     }
     
     
@@ -110,16 +110,23 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MovieCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! MovieCell
         let movie = movies[indexPath.row]
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
         cell.rating.text = movie.vote_average
         if movie.backdrop_path != nil {
             let imageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
-            cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: nil, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
+            let placeholder = UIImage.init(color: UIColor.white, size: cell.movieImageView.frame.size)
+            cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: placeholder, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
         }
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == movies.count - 1 {
+            movieListViewModel.loadMore(movie_sortType)
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

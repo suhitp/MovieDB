@@ -15,4 +15,5 @@ enum Constants {
     static let backdropImagePath = "https://image.tmdb.org/t/p/w500"
    
     static let detailSegue = "MovieDetailSegue"
+    static let reuseIdentifier = "MovieCell"
 }

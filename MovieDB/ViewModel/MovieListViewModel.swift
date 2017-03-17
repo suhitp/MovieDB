@@ -22,6 +22,11 @@ final class MovieListViewModel {
         getMovies(of: .popular)
     }
     
+    /*!
+     * @discussion get movies from MovieDB API
+     * @param movie sort option type
+     * @return array of movies or error
+     */
     private func getMovies(of type: MovieDB) {
         self.provider.request(type) { (result) in
             do {
@@ -37,8 +42,25 @@ final class MovieListViewModel {
         }
     }
     
+    
+    /*!
+     * @discussion Load more movies of given type
+     * @param movie sort option type
+     * @return
+     */
+    func loadMore(_ type: MovieDB) {
+        pageNum += 1
+        getMovies(of: type)
+    }
+    
+    
+    /*!
+     * @discussion Sort movies by type
+     * @param movie sort option type
+     * @return
+     */
     func sort(by type: MovieDB) {
-        pageNum = 0
+        pageNum = 1
         getMovies(of: type)
     }
     
