@@ -23,8 +23,8 @@ struct Movie: Mappable {
     var release_date: Date!
     var title: String!
     var video: Bool!
-    var vote_average: String!
-    var vote_count: Int!
+    var vote_average: Double?
+    var vote_count: Int?
     
     init?(map: Map) {
         

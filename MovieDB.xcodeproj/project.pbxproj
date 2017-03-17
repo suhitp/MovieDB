@@ -144,6 +144,16 @@
 			name = Constants;
 			sourceTree = "<group>";
 		};
+		B978C4411E7BB4D400CBC0A0 /* Supporting files */ = {
+			isa = PBXGroup;
+			children = (
+				D8DEDEE01E6EE6F900B59FB9 /* Info.plist */,
+				D8DEDEDD1E6EE6F900B59FB9 /* LaunchScreen.storyboard */,
+				D8DEDEDB1E6EE6F900B59FB9 /* Assets.xcassets */,
+			);
+			name = "Supporting files";
+			sourceTree = "<group>";
+		};
 		D87144531E6F03A900A1D6F8 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -230,19 +240,17 @@
 		D8DEDED31E6EE6F900B59FB9 /* MovieDB */ = {
 			isa = PBXGroup;
 			children = (
-				B978C43A1E7B911600CBC0A0 /* Constants */,
-				D87144591E6F03DA00A1D6F8 /* Protocols */,
-				D87144581E6F03D400A1D6F8 /* Extensions */,
+				D8DEDED41E6EE6F900B59FB9 /* AppDelegate.swift */,
+				D8DEDED81E6EE6F900B59FB9 /* Main.storyboard */,
 				D87144571E6F03CC00A1D6F8 /* ViewModel */,
 				D87144561E6F03C400A1D6F8 /* Networking */,
 				D87144551E6F03B900A1D6F8 /* Model */,
 				D87144541E6F03B300A1D6F8 /* View */,
 				D87144531E6F03A900A1D6F8 /* ViewController */,
-				D8DEDED41E6EE6F900B59FB9 /* AppDelegate.swift */,
-				D8DEDED81E6EE6F900B59FB9 /* Main.storyboard */,
-				D8DEDEDB1E6EE6F900B59FB9 /* Assets.xcassets */,
-				D8DEDEDD1E6EE6F900B59FB9 /* LaunchScreen.storyboard */,
-				D8DEDEE01E6EE6F900B59FB9 /* Info.plist */,
+				B978C43A1E7B911600CBC0A0 /* Constants */,
+				D87144591E6F03DA00A1D6F8 /* Protocols */,
+				D87144581E6F03D400A1D6F8 /* Extensions */,
+				B978C4411E7BB4D400CBC0A0 /* Supporting files */,
 			);
 			path = MovieDB;
 			sourceTree = "<group>";

@@ -114,7 +114,11 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         let movie = movies[indexPath.row]
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
-        cell.rating.text = movie.vote_average
+        
+        if let average = movie.vote_average {
+            cell.rating.text = String(average)
+        }
+        
         if movie.backdrop_path != nil {
             let imageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
             let placeholder = UIImage.init(color: UIColor.white, size: cell.movieImageView.frame.size)

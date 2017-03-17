@@ -18,7 +18,7 @@ class MovieDetailView: UIView {
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var rateLabel: UILabel!
     @IBOutlet weak var detailBackgroundView: UIView!
-    @IBOutlet weak var runtimeLabel: UILabel!
+    @IBOutlet weak var voteCountLabel: UILabel!
     @IBOutlet weak var genresLabel: UILabel!
     @IBOutlet weak var overviewTextView: UITextView!
     
@@ -27,10 +27,18 @@ class MovieDetailView: UIView {
         let isAdult = (movie.adult == true) ? " (A)": ""
         
         titleLabel.text = movie.title.appending(isAdult)
-        releaseDate.text = movie.release_date.toString()
-        rateLabel.text = movie.vote_average
-        runtimeLabel.text = String(movie.popularity)
-        genresLabel.text = movie.genre_ids.map({"\($0)"}).joined(separator: ",")
+        releaseDate.text = "Releasing on " + movie.release_date.toString()
+        
+        if let average = movie.vote_average {
+            rateLabel.text = "Average Vote: ".appending(String(average))
+        }
+        
+        if let count = movie.vote_count {
+            voteCountLabel.text = "Vote Count: ".appending(String(count))
+        }
+        
+        //genresLabel.text = movie.genre_ids.map({"\($0)"}).joined(separator: ",")
+        
         overviewTextView.text = movie.overview
         
         if movie.backdrop_path != nil {
