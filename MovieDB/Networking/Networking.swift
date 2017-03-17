@@ -12,6 +12,8 @@ import Moya
 let accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzOTYzZTZlOTdlN2IwYmYxNTQ3YmM3ZDNlMzE3YTdmMSIsInN1YiI6IjU4YmVhZTdhOTI1MTQxNjA3NzA2MjhiZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.U2CfQ-INBH_fEhfhK1q58SiFVcgLNDQCy-ttvqFHqCA"
 let apiKey = "3963e6e97e7b0bf1547bc7d3e317a7f1"
 
+var pageNum = 0
+
 // MARK: - Provider setup
 
 private func JSONResponseDataFormatter(_ data: Data) -> Data {
@@ -23,13 +25,6 @@ private func JSONResponseDataFormatter(_ data: Data) -> Data {
         return data // fallback to original data if it can't be serialized.
     }
 }
-
-/*let endpointClosure = { (target: MovieDB) -> Endpoint<MovieDB> in
-    let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
-    return defaultEndpoint.adding(newHTTPHeaderFields: ["Authorization": "Bearer \(accessToken)", "Content-Type": "application/json;charset=utf-8"])
-}
-
-let MovieDBProvider = MoyaProvider<MovieDB>(endpointClosure: endpointClosure, plugins: [NetworkLoggerPlugin(verbose: false, responseDataFormatter: JSONResponseDataFormatter)])*/
 
 let MovieDBProvider = MoyaProvider<MovieDB>()
 
@@ -51,10 +46,8 @@ extension MovieDB: TargetType {
     public var baseURL: URL { return URL(string: "https://api.themoviedb.org/3")! }
     public var path: String {
         switch self {
-        case .releaseDate,.popular:
+        case .releaseDate,.popular, .top:
             return "/discover/movie"
-        case .top:
-            return "/discover/movie/?certification_country=US&certification=R&sort_by=vote_average.desc"
         }
     }
     
@@ -65,11 +58,20 @@ extension MovieDB: TargetType {
     public var parameters: [String: Any]? {
         switch self {
         case .releaseDate:
-            return ["api_key":apiKey,
+            return ["page": (pageNum + 1),
+                    "api_key": apiKey,
                     "primary_release_date.gte" : "2017-01-01",
-                    "primary_release_date.lte" : "2017-12-31"]
-        case .popular, .top:
-            return nil
+                    "primary_release_date.lte" : "2017-12-31", "sort_by": "primary_release_date.desc", ]
+        case .popular:
+            return ["page": (pageNum + 1),
+                    "api_key": apiKey,
+                    "primary_release_date.gte" : "2017-01-01",
+                    "primary_release_date.lte" : "2017-12-31", "sort_by": "popularity.desc"]
+        case .top:
+            return ["page": (pageNum + 1),
+                    "api_key": apiKey,
+                    "primary_release_date.gte" : "2017-01-01",
+                    "primary_release_date.lte" : "2017-12-31", "sort_by": "vote_average.desc"]
         }
     }
     

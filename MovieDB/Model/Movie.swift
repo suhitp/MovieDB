@@ -41,15 +41,6 @@ struct Movie: Mappable {
         overview <- map["overview"]
         poster_path <- map["poster_path"]
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-//        let dateTransform = TransformOf<Date, String>(fromJSON: {
-//            return dateFormatter.date(from: $0!)
-//        }, toJSON: {
-//            return dateFormatter.string(from: $0!)
-//        })
-        
         release_date <- (map["release_date"], CustomDateFormatTransform(formatString: "yyyy-MM-dd"))
         title <- map["title"]
         video <- map["video"]

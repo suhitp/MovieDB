@@ -19,10 +19,10 @@ final class MovieListViewModel {
     
     init(provider: MoyaProvider<MovieDB>) {
         self.provider = provider
-        getMovies(of: .releaseDate)
+        getMovies(of: .popular)
     }
     
-    func getMovies(of type: MovieDB) {
+    private func getMovies(of type: MovieDB) {
         self.provider.request(type) { (result) in
             do {
                 let response = try result.dematerialize()
@@ -37,23 +37,9 @@ final class MovieListViewModel {
         }
     }
     
-    func sort(_ movies: [Movie], by type: MovieDB) -> [Movie] {
-        switch type {
-        case .releaseDate:
-            return movies.sorted(by: {
-                $0.release_date > $1.release_date
-            })
-            
-        case .popular:
-            return movies.sorted(by: {
-                $0.popularity > $1.popularity
-            })
-            
-        case .top:
-            return movies.sorted(by: {
-                return $0.vote_average > $1.vote_average
-            })
-        }
+    func sort(by type: MovieDB) {
+        pageNum = 0
+        getMovies(of: type)
     }
     
 }

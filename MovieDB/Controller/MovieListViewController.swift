@@ -15,9 +15,10 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     var movieListViewModel: MovieListViewModel! = nil
     var movies = [Movie]()
-    let baseImageUrl = "https://image.tmdb.org/t/p/w500"
+    
     var spinner: UIActivityIndicatorView! = nil
-    var type: MovieDB = .releaseDate
+    var movie_sortType: MovieDB = .popular
+    var sortOrderStatus = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,16 +71,28 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     private func handleSortAction(by type: MovieDB) {
-        self.movies = self.movieListViewModel.sort(self.movies, by: .popular)
-        collectionView?.reloadData()
+        
+        guard movie_sortType != type else {
+            return
+        }
+        sortOrderStatus = true
+        spinner.startAnimating()
+        movie_sortType = type
+        movieListViewModel.sort(by: type)
     }
     
     //mark: MovieDataProtocol
     
     func didReceiveDataWith(_ movies: [Movie]) {
+        
+        if sortOrderStatus == true {
+            self.movies.removeAll()
+        }
+        
         self.movies += movies
         spinner.stopAnimating()
         collectionView?.reloadData()
+        sortOrderStatus = false
     }
     
     
@@ -102,17 +115,28 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
         cell.rating.text = movie.vote_average
-        let imageUrl = baseImageUrl.appending(movie.backdrop_path)
-        cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: nil, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
+        if movie.backdrop_path != nil {
+            let imageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
+            cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: nil, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
+        }
         return cell
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        performSegue(withIdentifier: Constants.detailSegue, sender: self)
+    }
+    
      // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using [segue destinationViewController].
-     // Pass the selected object to the new view controller.
+     
+        if segue.identifier == Constants.detailSegue {
+            if let indexPath = collectionView?.indexPathsForSelectedItems?.first {
+                let movie = movies[indexPath.row]
+                let detailViewModel = MovieDetailViewModel(movie: movie)
+                let destination = segue.destination as! MovieDetailViewController
+                destination.detailViewModel = detailViewModel
+            }
+        }
      }
     
     //MARK: didReceiveMemoryWarning
