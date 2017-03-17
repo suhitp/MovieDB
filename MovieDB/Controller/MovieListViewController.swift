@@ -10,7 +10,6 @@ import UIKit
 import Kingfisher
 
 
-
 class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     var movieListViewModel: MovieListViewModel! = nil
@@ -121,8 +120,10 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         
         if movie.backdrop_path != nil {
             let imageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
-            let placeholder = UIImage.init(color: UIColor.white, size: cell.movieImageView.frame.size)
+            let placeholder = UIImage.init(color: UIColor(white: 0, alpha: 0.5), size: cell.movieImageView.frame.size)
             cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: placeholder, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
+        } else {
+            cell.movieImageView.image = UIImage(color: UIColor(white: 0, alpha: 0.5))
         }
         return cell
     }

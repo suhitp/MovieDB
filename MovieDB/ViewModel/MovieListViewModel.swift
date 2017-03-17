@@ -16,6 +16,7 @@ final class MovieListViewModel {
     // Private
     private let provider: MoyaProvider<MovieDB>
     weak var delegate: MovieDataProtocol?
+    var total_pages: Int = 0
     
     init(provider: MoyaProvider<MovieDB>) {
         self.provider = provider
@@ -32,10 +33,17 @@ final class MovieListViewModel {
             do {
                 let response = try result.dematerialize()
                 let value = try response.mapJSON() as! [String: Any]
+                
                 print(value)
+                
+                if let total = value["total_pages"] as? Int {
+                    self.total_pages = total
+                }
+                
                 if let movies = Mapper<Movie>().mapArray(JSONArray: (value["results"] as! [[String: Any]])) {
                     self.delegate?.didReceiveDataWith(movies)
                 }
+                
             } catch {
                 self.delegate?.didReceiveDataWith(error)
             }
@@ -49,6 +57,11 @@ final class MovieListViewModel {
      * @return
      */
     func loadMore(_ type: MovieDB) {
+        
+        guard pageNum < self.total_pages else {
+            return
+        }
+        
         pageNum += 1
         getMovies(of: type)
     }
