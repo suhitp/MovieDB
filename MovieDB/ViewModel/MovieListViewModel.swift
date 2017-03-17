@@ -19,6 +19,7 @@ final class MovieListViewModel {
     
     init(provider: MoyaProvider<MovieDB>) {
         self.provider = provider
+        getMovies(of: .releaseDate)
     }
     
     func getMovies(of type: MovieDB) {
@@ -31,10 +32,27 @@ final class MovieListViewModel {
                     self.delegate?.didReceiveDataWith(movies)
                 }
             } catch {
-                let printableError = error as? CustomStringConvertible
-                let errorMessage = printableError?.description ?? "Unable to fetch from GitHub"
                 self.delegate?.didReceiveDataWith(error)
             }
+        }
+    }
+    
+    func sort(_ movies: [Movie], by type: MovieDB) -> [Movie] {
+        switch type {
+        case .releaseDate:
+            return movies.sorted(by: {
+                $0.release_date > $1.release_date
+            })
+            
+        case .popular:
+            return movies.sorted(by: {
+                $0.popularity > $1.popularity
+            })
+            
+        case .top:
+            return movies.sorted(by: {
+                return $0.vote_average > $1.vote_average
+            })
         }
     }
     

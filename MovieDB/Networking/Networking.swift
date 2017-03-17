@@ -42,6 +42,7 @@ private extension String {
 }
 
 public enum MovieDB {
+    case releaseDate
     case popular
     case top
 }
@@ -50,7 +51,7 @@ extension MovieDB: TargetType {
     public var baseURL: URL { return URL(string: "https://api.themoviedb.org/3")! }
     public var path: String {
         switch self {
-        case .popular:
+        case .releaseDate,.popular:
             return "/discover/movie"
         case .top:
             return "/discover/movie/?certification_country=US&certification=R&sort_by=vote_average.desc"
@@ -63,10 +64,12 @@ extension MovieDB: TargetType {
     
     public var parameters: [String: Any]? {
         switch self {
-        case .popular, .top:
+        case .releaseDate:
             return ["api_key":apiKey,
                     "primary_release_date.gte" : "2017-01-01",
                     "primary_release_date.lte" : "2017-12-31"]
+        case .popular, .top:
+            return nil
         }
     }
     
@@ -80,9 +83,7 @@ extension MovieDB: TargetType {
     
     public var validate: Bool {
         switch self {
-        case .popular:
-            return true
-        case .top:
+        case .releaseDate, .popular, .top:
             return true
         }
     }
@@ -91,6 +92,8 @@ extension MovieDB: TargetType {
         case .popular:
             return "Half measures are as bad as nothing at all.".data(using: String.Encoding.utf8)!
         case .top:
+            return "Half measures are as bad as nothing at all.".data(using: String.Encoding.utf8)!
+        case .releaseDate:
             return "Half measures are as bad as nothing at all.".data(using: String.Encoding.utf8)!
         }
     }

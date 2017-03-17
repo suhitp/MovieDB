@@ -18,8 +18,9 @@ struct Movie: Mappable {
     var original_language: String!
     var original_title: String!
     var overview: String!
+    var popularity: Double!
     var poster_path: String!
-    var release_date: String!
+    var release_date: Date!
     var title: String!
     var video: Bool!
     var vote_average: String!
@@ -39,34 +40,33 @@ struct Movie: Mappable {
         original_title <- map["original_title"]
         overview <- map["overview"]
         poster_path <- map["poster_path"]
-        release_date <- map["release_date"]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+//        let dateTransform = TransformOf<Date, String>(fromJSON: {
+//            return dateFormatter.date(from: $0!)
+//        }, toJSON: {
+//            return dateFormatter.string(from: $0!)
+//        })
+        
+        release_date <- (map["release_date"], CustomDateFormatTransform(formatString: "yyyy-MM-dd"))
         title <- map["title"]
         video <- map["video"]
+        
+        let transform = TransformOf<Double, String>(fromJSON: { (value: String?) -> Double? in
+            if value != nil {
+                return Double(value!)
+            }
+            return 0
+        }) { (value) -> String? in
+            if value != nil {
+                return String(value!)
+            }
+            return nil
+        }
+        popularity <- (map["popularity"], transform)
         vote_average <- map["vote_average"]
         vote_count <- map["vote_count"]
     }
-    
-    
-    /*
- 
- adult = 0;
- "backdrop_path" = "/5pAGnkFYSsFJ99ZxDIYnhQbQFXs.jpg";
- "genre_ids" =             (
- 28,
- 18,
- 878
- );
- id = 263115;
- "original_language" = en;
- "original_title" = Logan;
- overview = "In the near future, a weary Logan cares for an ailing Professor X in a hide out on the Mexican border. But Logan's attempts to hide from the world and his legacy are up-ended when a young mutant arrives, being pursued by dark forces.";
- popularity = "171.249545";
- "poster_path" = "/45Y1G5FEgttPAwjTYic6czC9xCn.jpg";
- "release_date" = "2017-02-28";
- title = Logan;
- video = 0;
- "vote_average" = "7.7";
- "vote_count" = 1295;
-*/
- 
 }

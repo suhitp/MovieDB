@@ -16,12 +16,22 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     var movieListViewModel: MovieListViewModel! = nil
     var movies = [Movie]()
     let baseImageUrl = "https://image.tmdb.org/t/p/w500"
+    var spinner: UIActivityIndicatorView! = nil
+    var type: MovieDB = .releaseDate
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.title = "Movies"
+        
         // Register cell classes
         configureCollectionView()
+        
+        //start spinner
+        spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
         
         movieListViewModel = MovieListViewModel(provider: MovieDBProvider)
         movieListViewModel.delegate = self
@@ -37,26 +47,47 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         self.collectionView!.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
     }
     
-    private func loadMovieData() {
-        self.movieListViewModel.getMovies(of: .popular)
+    
+    @IBAction func sortMovies(_ sender: UIBarButtonItem) {
+        
+        let alertController = UIAlertController(title: "Sort movies by", message: "", preferredStyle: .actionSheet)
+        
+        alertController.addAction(UIAlertAction(title: "Popular", style: .default , handler:{ _ in
+            self.handleSortAction(by: .popular)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Top rated", style: .default , handler:{ (UIAlertAction)in
+           self.handleSortAction(by: .top)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Release Date", style: .default , handler:{ (UIAlertAction)in
+            self.handleSortAction(by: .releaseDate)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler:{ _ in }))
+        
+        self.present(alertController, animated: true, completion: nil)
     }
+    
+    private func handleSortAction(by type: MovieDB) {
+        self.movies = self.movieListViewModel.sort(self.movies, by: .popular)
+        collectionView?.reloadData()
+    }
+    
     //mark: MovieDataProtocol
     
     func didReceiveDataWith(_ movies: [Movie]) {
         self.movies += movies
+        spinner.stopAnimating()
         collectionView?.reloadData()
     }
     
     
-    func didReceiveDataWith(_ error: NSError) {
+    func didReceiveDataWith(_ error: Error) {
+        spinner.stopAnimating()
         print(error.localizedDescription)
     }
     
-    //MARK: didReceiveMemoryWarning
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     
     // MARK: UICollectionViewDataSource
@@ -69,7 +100,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MovieCell
         let movie = movies[indexPath.row]
         cell.movieTitle.text = movie.title
-        cell.releaseDate.text = movie.release_date
+        cell.releaseDate.text = movie.release_date.toString()
         cell.rating.text = movie.vote_average
         let imageUrl = baseImageUrl.appending(movie.backdrop_path)
         cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: nil, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
@@ -83,5 +114,12 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
      // Get the new view controller using [segue destinationViewController].
      // Pass the selected object to the new view controller.
      }
+    
+    //MARK: didReceiveMemoryWarning
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
 
 }
