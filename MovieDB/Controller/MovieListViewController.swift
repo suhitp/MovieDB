@@ -19,6 +19,10 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     var movie_sortType: MovieDB = .popular
     var sortOrderStatus = false
     
+    var searchBar: UISearchBar!
+    var searchResults = [Movie]()
+    var searchActive = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,12 +31,22 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         // Register cell classes
         configureCollectionView()
         
+        //configure SearchBar
+        searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.size.width, height: 44))
+        searchBar.placeholder = "Search your favourite movie..."
+        searchBar.delegate = self
+        searchBar.enablesReturnKeyAutomatically = false
+        searchBar.tintColor = .white
+        searchBar.barStyle = .black
+        collectionView?.addSubview(searchBar)
+        
         //start spinner
         spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
         spinner.center = view.center
         spinner.startAnimating()
         view.addSubview(spinner)
         
+        //init MovieListViewModel and set delegate
         movieListViewModel = MovieListViewModel(provider: MovieDBProvider)
         movieListViewModel.delegate = self
     }
@@ -47,6 +61,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         self.collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
     }
     
+    //MARK: SortMovies Method
     
     @IBAction func sortMovies(_ sender: UIBarButtonItem) {
         
@@ -69,6 +84,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         self.present(alertController, animated: true, completion: nil)
     }
     
+    //MARK: Private Method
     private func handleSortAction(by type: MovieDB) {
         
         guard movie_sortType != type else {
@@ -79,6 +95,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         movie_sortType = type
         movieListViewModel.sort(by: type)
     }
+    
     
     //mark: MovieDataProtocol
     
@@ -101,16 +118,30 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     
-    
     // MARK: UICollectionViewDataSource
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.movies.count
+        
+        switch searchActive {
+        case true:
+            return searchResults.count
+        case false:
+            return movies.count
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! MovieCell
-        let movie = movies[indexPath.row]
+        
+        var movie: Movie
+        
+        if searchActive {
+            movie = searchResults[indexPath.row]
+        } else {
+            movie = movies[indexPath.row]
+        }
+    
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
         
@@ -129,12 +160,16 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == movies.count - 1 {
-            movieListViewModel.loadMore(movie_sortType)
+        
+        if !searchActive {
+            if indexPath.row == movies.count - 1 {
+                movieListViewModel.loadMore(movie_sortType)
+            }
         }
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        view.endEditing(true)
         performSegue(withIdentifier: Constants.detailSegue, sender: self)
     }
     
@@ -156,6 +191,4 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
