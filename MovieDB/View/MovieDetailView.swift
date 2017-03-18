@@ -43,14 +43,16 @@ class MovieDetailView: UIView {
         
         overviewTextView.text = movie.overview
         
+        let placeholder = UIImage.init(color: UIColor(white: 0, alpha: 0.5))
+        
         if movie.backdrop_path != nil {
             let backdropImageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
-            backgroundImageView.kf.setImage(with: URL(string: backdropImageUrl), options: [.transition(.fade(0.5))], progressBlock: nil, completionHandler: nil)
+            backgroundImageView.kf.setImage(with: URL(string: backdropImageUrl), placeholder: placeholder, options: [.transition(.fade(0.5))], progressBlock: nil, completionHandler: nil)
         }
         
         if movie.poster_path != nil {
             let posterImageUrl = Constants.posterImagePath.appending(movie.poster_path)
-            posterImageView.kf.setImage(with: URL(string: posterImageUrl), placeholder: nil, options: [.transition(.fade(0.5))], progressBlock: nil, completionHandler: nil)
+            posterImageView.kf.setImage(with: URL(string: posterImageUrl), placeholder: placeholder, options: [.transition(.fade(0.5))], progressBlock: nil, completionHandler: nil)
         }
         
     }
