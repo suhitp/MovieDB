@@ -9,14 +9,22 @@
 import UIKit
 
 
-extension MovieListViewController: UISearchBarDelegate {
-
+extension MovieListViewController: UISearchResultsUpdating {
+    
     // MARK: Search
-    func filterContent(for searchText :String){
-        searchResults = movies.filter { $0.title.hasPrefix(searchText) }
+    func filterContent(for searchText :String) {
+        //searchResults = movies.filter { $0.title.lowercased().hasPrefix(searchText.lowercased()) }
+        searchResults = movies.filter {
+            $0.title.lowercased().contains(searchText.lowercased())
+        }
+        collectionView?.reloadData()
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContent(for: searchController.searchBar.text!)
+    }
+    
+    /*func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // user did type something, check our datasource for text that looks the same
         if searchText.characters.count > 0 {
             // search and reload data source
@@ -54,6 +62,6 @@ extension MovieListViewController: UISearchBarDelegate {
             searchActive = false
             searchBar.showsCancelButton = false
         }
-    }
+    }*/
 
 }

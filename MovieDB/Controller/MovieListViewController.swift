@@ -21,7 +21,14 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     var searchBar: UISearchBar!
     var searchResults = [Movie]()
-    var searchActive = false
+    
+    var searchActive: Bool {
+        get {
+            return self.searchController.isActive && self.searchController.searchBar.text != ""
+        }
+    }
+    
+    var searchController: UISearchController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,13 +39,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         configureCollectionView()
         
         //configure SearchBar
-        searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.size.width, height: 44))
-        searchBar.placeholder = "Search your favourite movie..."
-        searchBar.delegate = self
-        searchBar.enablesReturnKeyAutomatically = false
-        searchBar.tintColor = .white
-        searchBar.barStyle = .black
-        collectionView?.addSubview(searchBar)
+        configureSearchController()
         
         //start spinner
         spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
@@ -56,9 +57,22 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         layout.minimumLineSpacing = 1
         layout.minimumInteritemSpacing = 1
         layout.itemSize = CGSize(width: view.frame.size.width / 2 - 0.5, height: 134)
+        layout.sectionInset = UIEdgeInsetsMake(44, 0, 0, 0)
         
         let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
-        self.collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
+        collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
+    }
+    
+    private func configureSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search your favourite movie..."
+        searchController.searchBar.enablesReturnKeyAutomatically = false
+        searchController.searchBar.tintColor = .white
+        searchController.searchBar.barStyle = .black
+        definesPresentationContext = true
+        collectionView?.addSubview(searchController.searchBar)
     }
     
     //MARK: SortMovies Method
@@ -122,10 +136,9 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        switch searchActive {
-        case true:
+        if searchActive {
             return searchResults.count
-        case false:
+        } else {
             return movies.count
         }
     }
@@ -134,13 +147,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! MovieCell
         
-        var movie: Movie
-        
-        if searchActive {
-            movie = searchResults[indexPath.row]
-        } else {
-            movie = movies[indexPath.row]
-        }
+        let movie = currentMovie(at: indexPath)
     
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
@@ -174,17 +181,27 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
      // MARK: - Navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      
         if segue.identifier == Constants.detailSegue {
             if let indexPath = collectionView?.indexPathsForSelectedItems?.first {
-                let movie = movies[indexPath.row]
+                let movie = currentMovie(at: indexPath)
                 let detailViewModel = MovieDetailViewModel(movie: movie)
                 let destination = segue.destination as! MovieDetailViewController
                 destination.detailViewModel = detailViewModel
             }
         }
-     }
+    }
+    
+    //MARK: Returns movie at indexPath
+    
+    private func currentMovie(at indexPath: IndexPath) -> Movie {
+        if searchActive {
+            return searchResults[indexPath.row]
+        } else {
+            return movies[indexPath.row]
+        }
+    }
     
     //MARK: didReceiveMemoryWarning
     override func didReceiveMemoryWarning() {
