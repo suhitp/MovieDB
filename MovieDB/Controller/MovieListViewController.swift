@@ -19,6 +19,17 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     var movie_sortType: MovieDB = .popular
     var sortOrderStatus = false
     
+    var searchBar: UISearchBar!
+    var searchResults = [Movie]()
+    
+    var searchActive: Bool {
+        get {
+            return self.searchController.isActive && self.searchController.searchBar.text != ""
+        }
+    }
+    
+    var searchController: UISearchController!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,14 +38,23 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         // Register cell classes
         configureCollectionView()
         
+        //configure SearchBar
+        configureSearchController()
+        
         //start spinner
         spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
         spinner.center = view.center
         spinner.startAnimating()
         view.addSubview(spinner)
         
+        //init MovieListViewModel and set delegate
         movieListViewModel = MovieListViewModel(provider: MovieDBProvider)
         movieListViewModel.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
     }
     
     private func configureCollectionView() {
@@ -42,11 +62,25 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         layout.minimumLineSpacing = 1
         layout.minimumInteritemSpacing = 1
         layout.itemSize = CGSize(width: view.frame.size.width / 2 - 0.5, height: 134)
+        layout.sectionInset = UIEdgeInsetsMake(44, 0, 0, 0)
         
         let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
-        self.collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
+        collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
     }
     
+    private func configureSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search your favourite movie..."
+        searchController.searchBar.enablesReturnKeyAutomatically = false
+        searchController.searchBar.tintColor = .white
+        searchController.searchBar.barStyle = .black
+        definesPresentationContext = true
+        collectionView?.addSubview(searchController.searchBar)
+    }
+    
+    //MARK: SortMovies Method
     
     @IBAction func sortMovies(_ sender: UIBarButtonItem) {
         
@@ -69,6 +103,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         self.present(alertController, animated: true, completion: nil)
     }
     
+    //MARK: Private Method
     private func handleSortAction(by type: MovieDB) {
         
         guard movie_sortType != type else {
@@ -79,6 +114,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         movie_sortType = type
         movieListViewModel.sort(by: type)
     }
+    
     
     //mark: MovieDataProtocol
     
@@ -101,16 +137,23 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     
-    
     // MARK: UICollectionViewDataSource
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.movies.count
+        
+        if searchActive {
+            return searchResults.count
+        } else {
+            return movies.count
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! MovieCell
-        let movie = movies[indexPath.row]
+        
+        let movie = currentMovie(at: indexPath)
+    
         cell.movieTitle.text = movie.title
         cell.releaseDate.text = movie.release_date.toString()
         
@@ -129,33 +172,45 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == movies.count - 1 {
-            movieListViewModel.loadMore(movie_sortType)
+        
+        if !searchActive {
+            if indexPath.row == movies.count - 1 {
+                movieListViewModel.loadMore(movie_sortType)
+            }
         }
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        view.endEditing(true)
         performSegue(withIdentifier: Constants.detailSegue, sender: self)
     }
     
      // MARK: - Navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      
         if segue.identifier == Constants.detailSegue {
             if let indexPath = collectionView?.indexPathsForSelectedItems?.first {
-                let movie = movies[indexPath.row]
+                let movie = currentMovie(at: indexPath)
                 let detailViewModel = MovieDetailViewModel(movie: movie)
                 let destination = segue.destination as! MovieDetailViewController
                 destination.detailViewModel = detailViewModel
             }
         }
-     }
+    }
+    
+    //MARK: Returns movie at indexPath
+    
+    private func currentMovie(at indexPath: IndexPath) -> Movie {
+        if searchActive {
+            return searchResults[indexPath.row]
+        } else {
+            return movies[indexPath.row]
+        }
+    }
     
     //MARK: didReceiveMemoryWarning
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }

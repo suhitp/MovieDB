@@ -16,4 +16,5 @@ enum Constants {
    
     static let detailSegue = "MovieDetailSegue"
     static let reuseIdentifier = "MovieCell"
+    static let headerIdentifier = "MovieSearchHeaderView"
 }
