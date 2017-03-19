@@ -14,22 +14,23 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     
     var movieListViewModel: MovieListViewModel! = nil
     var movies = [Movie]()
-    
+   
     var spinner: UIActivityIndicatorView! = nil
+    
     var movie_sortType: MovieDB = .popular
     var sortOrderStatus = false
     
-    var searchBar: UISearchBar!
-    var searchResults = [Movie]()
+    var searchController: UISearchController!
     
+    var searchResults = [Movie]()
     var searchActive: Bool {
         get {
             return self.searchController.isActive && self.searchController.searchBar.text != ""
         }
     }
     
-    var searchController: UISearchController!
     
+    //MARK: ViewController LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,6 +58,8 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
     }
     
+    //MARK: configureCollectionView
+    
     private func configureCollectionView() {
         let layout = collectionView?.collectionViewLayout as! UICollectionViewFlowLayout
         layout.minimumLineSpacing = 1
@@ -67,6 +70,8 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
         collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
     }
+    
+    //MARK: configureSearchController
     
     private func configureSearchController() {
         searchController = UISearchController(searchResultsController: nil)
@@ -104,6 +109,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
     }
     
     //MARK: Private Method
+    
     private func handleSortAction(by type: MovieDB) {
         
         guard movie_sortType != type else {
@@ -185,7 +191,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         performSegue(withIdentifier: Constants.detailSegue, sender: self)
     }
     
-     // MARK: - Navigation
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      
         if segue.identifier == Constants.detailSegue {
