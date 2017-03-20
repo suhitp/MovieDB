@@ -15,11 +15,20 @@ final class MovieListViewModel {
     
     // Private
     private let provider: MoyaProvider<MovieDB>
-    weak var delegate: MovieDataProtocol?
-    var total_pages: Int = 0
     
-    init(provider: MoyaProvider<MovieDB>) {
+    weak var delegate: MovieDataProtocol?
+    public var total_pages: Int = 0
+    
+    enum LoadingState {
+        case none
+        case loading
+    }
+    
+    public var loadingState: LoadingState
+    
+    init(provider: MoyaProvider<MovieDB>, loadingState: LoadingState = .none) {
         self.provider = provider
+        self.loadingState = loadingState
         getMovies(of: .popular)
     }
     

@@ -69,6 +69,9 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         
         let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
         collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
+        
+        let footerNib = UINib(nibName: Constants.customFooterView, bundle: nil)
+        collectionView?.register(footerNib, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: Constants.footerIdentifier)
     }
     
     //MARK: configureSearchController
@@ -130,10 +133,26 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
             self.movies.removeAll()
         }
         
-        self.movies += movies
-        spinner.stopAnimating()
-        collectionView?.reloadData()
-        sortOrderStatus = false
+        if movies.count > 20 {
+            collectionView?.performBatchUpdates({
+                let count = movies.count
+                self.movies += movies
+                var indexpaths = [IndexPath]()
+                for index in count..<movies.count {
+                    indexpaths.append(IndexPath(item: index, section: 0))
+                }
+                self.collectionView?.insertItems(at: indexpaths)
+            }, completion: { (_) in
+                self.sortOrderStatus = false
+                //self.movieListViewModel.loadingState = .none
+            })
+        } else {
+            self.movies += movies
+            spinner.stopAnimating()
+            collectionView?.reloadData()
+            sortOrderStatus = false
+            //movieListViewModel.loadingState = .none
+        }
     }
     
     
@@ -181,10 +200,38 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         
         if !searchActive {
             if indexPath.row == movies.count - 1 {
+                movieListViewModel.loadingState = .loading
                 movieListViewModel.loadMore(movie_sortType)
+            } else {
+                movieListViewModel.loadingState = .none
             }
         }
     }
+    
+    //MARK: Footer
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        if movieListViewModel.loadingState == .none {
+            return CGSize.zero
+        }
+        return CGSize(width: view.frame.size.width, height: 50)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        switch kind {
+        case UICollectionElementKindSectionFooter:
+            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerIdentifier, for: indexPath) as! CustomFooterView
+            footerView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+            footerView.spinner.startAnimating()
+            return footerView
+        default:
+            assert(false, "Unexpected element kind")
+        }
+    }
+    
+    //MARK: UICollectionViewDelegate
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         view.endEditing(true)
