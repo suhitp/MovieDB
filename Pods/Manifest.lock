@@ -1,30 +1,42 @@
 PODS:
-  - Alamofire (4.3.0)
-  - Kingfisher (3.4.0)
-  - Moya (8.0.2):
-    - Moya/Core (= 8.0.2)
-  - Moya/Core (8.0.2):
+  - Alamofire (4.8.1)
+  - Kingfisher (5.1.0)
+  - Moya (12.0.1):
+    - Moya/Core (= 12.0.1)
+  - Moya/Core (12.0.1):
     - Alamofire (~> 4.1)
-    - Result (~> 3.0)
-  - ObjectMapper (2.2.3)
-  - Result (3.1.0)
-  - RxSwift (3.2.0)
+    - Result (~> 4.0)
+  - ObjectMapper (3.4.2)
+  - Result (4.1.0)
+  - RxAtomic (4.4.1)
+  - RxSwift (4.4.1):
+    - RxAtomic (~> 4.4)
 
 DEPENDENCIES:
-  - Alamofire
-  - Kingfisher
-  - Moya
-  - ObjectMapper
-  - RxSwift
+  - Kingfisher (= 5.1.0)
+  - Moya (= 12.0.1)
+  - ObjectMapper (= 3.4.2)
+  - RxSwift (= 4.4.1)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - Kingfisher
+    - Moya
+    - ObjectMapper
+    - Result
+    - RxAtomic
+    - RxSwift
 
 SPEC CHECKSUMS:
-  Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
-  Kingfisher: 5690cfb3d1bddf3a98d679a3a34d0b7294974ed2
-  Moya: 47f61da5b634aa71f676431b64ee0f81e976296d
-  ObjectMapper: d3b3de11267f5d971f390eb8d63dd509116a4329
-  Result: 4e3ed5995ed94d0cd6a09be9a431fce3f3624bbf
-  RxSwift: 46574f70d416b7923c237195939cc488a7fbf3a0
+  Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
+  Kingfisher: fcec238063d17404fca89bf0a850583211c4cbf6
+  Moya: cf730b3cd9e005401ef37a85143aa141a12fd38f
+  ObjectMapper: 0d4402610f4e468903ae64629eec4784531e5c51
+  Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
+  RxAtomic: f8d6adc1ccb87a767811269e4875887bc74dbf19
+  RxSwift: 92fcf68dfef21f3e2ab1965363d9e7b3d787597e
 
-PODFILE CHECKSUM: b1972b58044a85e115608ac377afbddc7d6cf474
+PODFILE CHECKSUM: 6ec24c98a40cf842486f2d953334b95690ea20f7
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.5.3

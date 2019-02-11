@@ -43,7 +43,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         configureSearchController()
         
         //start spinner
-        spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        spinner = UIActivityIndicatorView(style: .gray)
         spinner.center = view.center
         spinner.startAnimating()
         view.addSubview(spinner)
@@ -65,13 +65,13 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         layout.minimumLineSpacing = 1
         layout.minimumInteritemSpacing = 1
         layout.itemSize = CGSize(width: view.frame.size.width / 2 - 0.5, height: 134)
-        layout.sectionInset = UIEdgeInsetsMake(44, 0, 0, 0)
+        layout.sectionInset = UIEdgeInsets.init(top: 44, left: 0, bottom: 0, right: 0)
         
         let nib = UINib(nibName: Constants.reuseIdentifier, bundle: nil)
         collectionView!.register(nib, forCellWithReuseIdentifier: Constants.reuseIdentifier)
         
         let footerNib = UINib(nibName: Constants.customFooterView, bundle: nil)
-        collectionView?.register(footerNib, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: Constants.footerIdentifier)
+        collectionView?.register(footerNib, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: Constants.footerIdentifier)
     }
     
     //MARK: configureSearchController
@@ -106,7 +106,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
             self.handleSortAction(by: .releaseDate)
         }))
         
-        alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler:{ _ in }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler:{ _ in }))
         
         self.present(alertController, animated: true, completion: nil)
     }
@@ -178,21 +178,8 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! MovieCell
         
         let movie = currentMovie(at: indexPath)
-    
-        cell.movieTitle.text = movie.title
-        cell.releaseDate.text = movie.release_date.toString()
+        cell.configure(withData: movie)
         
-        if let average = movie.vote_average {
-            cell.rating.text = String(average)
-        }
-        
-        if movie.backdrop_path != nil {
-            let imageUrl = Constants.backdropImagePath.appending(movie.backdrop_path)
-            let placeholder = UIImage.init(color: UIColor(white: 0, alpha: 0.5), size: cell.movieImageView.frame.size)
-            cell.movieImageView.kf.setImage(with: URL(string: imageUrl)!, placeholder: placeholder, options: [.transition(.fade(0.5))],  progressBlock: nil, completionHandler: nil)
-        } else {
-            cell.movieImageView.image = UIImage(color: UIColor(white: 0, alpha: 0.5))
-        }
         return cell
     }
     
@@ -221,7 +208,7 @@ class MovieListViewController: UICollectionViewController, MovieDataProtocol {
         at indexPath: IndexPath) -> UICollectionReusableView {
         
         switch kind {
-        case UICollectionElementKindSectionFooter:
+        case UICollectionView.elementKindSectionFooter:
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerIdentifier, for: indexPath) as! CustomFooterView
             footerView.backgroundColor = UIColor(white: 0, alpha: 0.5)
             footerView.spinner.startAnimating()

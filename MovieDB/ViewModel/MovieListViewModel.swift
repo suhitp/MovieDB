@@ -49,9 +49,9 @@ final class MovieListViewModel {
                     self.total_pages = total
                 }
                 
-                if let movies = Mapper<Movie>().mapArray(JSONArray: (value["results"] as! [[String: Any]])) {
-                    self.delegate?.didReceiveDataWith(movies)
-                }
+//                if let movies = Mapper<Movie>().mapArray(JSONArray: value["results"] as! [[String : Any]]) {
+//                    self.delegate?.didReceiveDataWith(movies)
+//                }
                 
             } catch {
                 self.delegate?.didReceiveDataWith(error)
